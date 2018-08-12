@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## System Variables
-BLIST="/opt/comvert/blacklist.ini" # Define the blacklist
+BLIST="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" || return; pwd)/blacklist.ini" # Define the blacklist
 TEMP="/tmp" # Convert stats are temporary
 
 ## Default Options
