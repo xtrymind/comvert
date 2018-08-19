@@ -10,7 +10,7 @@ INPUT="cbr"
 OUTPUT="cbz"
 
 ## User Options
-while getopts s:i:o:f:l opt; do
+while getopts s:i:o:f:l:b opt; do
 	case $opt in
 	s) # Source directory
 		SOURCE=$OPTARG
@@ -26,6 +26,9 @@ while getopts s:i:o:f:l opt; do
 		;;
 	l) # Log suspicious files locally
 		LOCAL="1"
+		;;
+	b) # Skip blacklist check
+		NO_BL=true
 		;;
 	esac
 done
@@ -103,13 +106,15 @@ echo "-> Extracting"
 echo "--> Scanning"
 
 ## Scan the Blacklist
-while read CBSCAN; do
-	CBCRED=`find -type f -iname "$CBSCAN"`
-	if [ ! -z "$CBCRED" ]; then
-		rm "$CBCRED"
-		echo "--> Removed Blacklisted File"
-	fi
-done < "$BLIST"
+if [[ -z ${NO_BL} ]]; then
+	while read CBSCAN; do
+		CBCRED=`find -type f -iname "$CBSCAN"`
+		if [ ! -z "$CBCRED" ]; then
+			rm "$CBCRED"
+			echo "--> Removed Blacklisted File"
+		fi
+	done < "$BLIST"
+fi
 
 ## Scan for Suspicious files
 SUSP="$SOURCE/suspicious_files.txt"
