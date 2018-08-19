@@ -67,6 +67,8 @@ function gen_variable(){
 	## Output Variables
 	LOG="$TEMP/comvert.log"
 	CACHE="$SOURCE/.cb_cache"
+
+	[[ "$SOURCE" = /* ]] || SOURCE="$(dirname -- "$(realpath -- "$SOURCE")")/$SOURCE"
 }
 
 # Define INPUT format
