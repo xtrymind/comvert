@@ -149,9 +149,9 @@ rmdir "$CACHE"
 echo
 
 ## Stats
-CBDID=$(cat "$LOG" |grep -c -i "Processing")
-CBFND=$(cat "$LOG" |grep -c -i "Blacklisted")
-CBMSD=$(cat "$LOG" |grep -c -i "Suspicious")
+CBDID=$(grep -c -i "Processing" "$LOG")
+CBFND=$(grep -c -i "Blacklisted" "$LOG")
+CBMSD=$(grep -c -i "Suspicious" "$LOG")
 
 echo "+ $CBDID archives processed"
 echo "+ $CBFND files removed"
