@@ -40,7 +40,7 @@ if [ -z "$FILE" ]; then
 	COMIC="*.$INPUT"
 else
 	INPUT="${FILE#*.}" # Get INPUT type from file
-	FILE=`basename "$FILE" .$INPUT` # Redefine the file
+	FILE=$(basename "$FILE" .$INPUT) # Redefine the file
 	COMIC="$FILE.$INPUT"
 fi
 
@@ -93,8 +93,8 @@ echo
 ## Convert Loop
 find "$SOURCE" -name "$COMIC" | while read -r CBFILE; do
 
-BASENAME=`basename "$CBFILE" .$INPUT`
-DIRNAME=`dirname "$CBFILE"`
+BASENAME=$(basename "$CBFILE" .$INPUT)
+DIRNAME=$(dirname "$CBFILE")
 NEWNAME="$BASENAME.$OUTPUT"
 
 echo "> Processing: $BASENAME"
@@ -108,7 +108,7 @@ echo "--> Scanning"
 ## Scan the Blacklist
 if [[ -z ${NO_BL} ]]; then
 	while read -r CBSCAN; do
-		CBCRED=`find -type f -iname "$CBSCAN"`
+		CBCRED=$(find -type f -iname "$CBSCAN")
 		if [ ! -z "$CBCRED" ]; then
 			rm "$CBCRED"
 			echo "--> Removed Blacklisted File"
@@ -118,7 +118,7 @@ fi
 
 ## Scan for Suspicious files
 SUSP="$SOURCE/suspicious_files.txt"
-CBSCAN=`find -type f -iname "[x-z]*"`
+CBSCAN=$(find -type f -iname "[x-z]*")
 if [ ! -z "$CBSCAN" ]; then
 	echo "--> Suspicious files found!"
 	if [[ -n ${LOCAL} ]]; then
