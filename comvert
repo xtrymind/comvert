@@ -25,7 +25,7 @@ while getopts s:i:o:f:l:b opt; do
 		FILE=$OPTARG
 		;;
 	l) # Log suspicious files locally
-		LOCAL="1"
+		LOCAL=true
 		;;
 	b) # Skip blacklist check
 		NO_BL=true
@@ -121,7 +121,7 @@ SUSP="$SOURCE/suspicious_files.txt"
 CBSCAN=`find -type f -iname "[x-z]*"`
 if [ ! -z "$CBSCAN" ]; then
 	echo "--> Suspicious files found!"
-	if [ "$LOCAL" == "1" ];then
+	if [[ -n ${LOCAL} ]]; then
 		echo "$BASENAME" >> "$SUSP"
 		echo "$CBSCAN" >> "$SUSP"
 		echo "|" >> "$SUSP"
