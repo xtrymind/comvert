@@ -138,11 +138,12 @@ function check_suspicious() {
 function convert() {
 	find "$SOURCE" -name "$COMIC" | while read -r CBFILE; do
 
+		COMICNAME=$(basename "$CBFILE")
 		BASENAME=$(basename "$CBFILE" ."$INPUT")
 		DIRNAME=$(dirname "$CBFILE")
 		NEWNAME="$BASENAME.$OUTPUT"
 
-		echo "> Processing: $BASENAME"
+		echo "> Processing: $COMICNAME"
 		cd "$CACHE" || die "folder missing!"
 
 		echo "-> Extracting"
