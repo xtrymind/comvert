@@ -132,7 +132,7 @@ if [ ! -z "$CBSCAN" ]; then
 fi
 
 echo "-> Compressing"
-	7z a -sdel -t$FORMAT "$NEWNAME" * > /dev/null
+	7z a -sdel -t$FORMAT "$NEWNAME" ./* > /dev/null
 	mv "$NEWNAME" "$DIRNAME"
 
 ## Dont delete the new file if it has the same name
