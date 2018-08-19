@@ -89,35 +89,15 @@ function def_output() {
 	elif [ "$OUTPUT" == "cb7" ]; then
 		FORMAT="7z"
 	else
-		{ echo "+ Output format is not supported"; echo; exit 1; }
+		die "Output format is not supported"
 	fi
 }
 
 # Sanity checks
 function sanity_check(){
-	if [ ! -f "$BLIST" ];then
-		{ echo "+ Could not find the Blacklist"; exit 1; }
-	fi
-
-	if [ -f "$LOG" ];then
-		rm "$LOG" \
-			|| { echo "+ Error removing old log"; exit 1; }
-		touch "$LOG" 2>/dev/null \
-			|| { echo "+ Error writing log"; exit 1; }
-	else
-		touch "$LOG" 2>/dev/null \
-			|| { echo "+ Error writing log"; exit 1; }
-	fi
-
-	if [ -d "$CACHE" ]; then
-		rm -rf "$CACHE" \
-			|| { echo "+ Error removing old cache"; exit 1; }
-		mkdir "$CACHE" 2>/dev/null \
-			|| { echo "+ Error creating cache"; exit 1; }
-	else
-		mkdir "$CACHE" 2>/dev/null \
-			|| { echo "+ Error creating cache"; exit 1; }
-	fi
+	[[ ! -f "$BLIST" ]] && die "Could not find the Blacklist"
+	[[ -f "$LOG" ]] || touch "$LOG"
+	[[ -d "$CACHE" ]] || mkdir "$CACHE"
 }
 
 # Scan the Blacklist
@@ -161,7 +141,7 @@ function convert() {
 		NEWNAME="$BASENAME.$OUTPUT"
 
 		echo "> Processing: $BASENAME"
-		cd "$CACHE" || die "folder is missing!"
+		cd "$CACHE" || die "folder missing!"
 
 		echo "-> Extracting"
 		7z x "$CBFILE" >/dev/null
@@ -194,7 +174,7 @@ function start_log(){
 
 function ending_info(){
 	echo "=> Conversion Done"
-	rmdir "$CACHE"
+	rm -rf "$CACHE"
 	echo
 
 	## Stats
