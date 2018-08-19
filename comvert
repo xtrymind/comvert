@@ -1,29 +1,5 @@
 #!/bin/bash
 
-## System Variables
-BLIST="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" || return; pwd)/blacklist.ini" # Define the blacklist
-TEMP="/tmp" # Convert stats are temporary
-
-## Default Options
-SOURCE=$(pwd)
-INPUT="cbr"
-OUTPUT="cbz"
-
-## Output Variables
-LOG="$TEMP/comvert.log"
-CACHE="$SOURCE/.cb_cache"
-
-# Enforces the value needed for two-part flags
-function enforce_value() {
-    [[ ${#} -lt 1 ]] && die "An additional value is needed for one of the flags passed to this script!"
-}
-
-# Prints an error and exits the script
-function die() {
-    echo "${1}"
-    exit
-}
-
 # Gather parameters
 function parse_parameters() {
     while [[ ${#} -ge 1 ]]; do
@@ -65,6 +41,32 @@ function parse_parameters() {
 
         shift
     done
+
+    ## Default Options
+	[[ -z ${SOURCE} ]] && SOURCE=$(pwd)
+	[[ -z ${INPUT} ]] && INPUT="cbr"
+	[[ -z ${OUTPUT} ]] && OUTPUT="cbz"
+}
+
+# Enforces the value needed for two-part flags
+function enforce_value() {
+    [[ ${#} -lt 1 ]] && die "An additional value is needed for one of the flags passed to this script!"
+}
+
+# Prints an error and exits the script
+function die() {
+    echo "${1}"
+    exit
+}
+
+function gen_variable(){
+	## System Variables
+	BLIST="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" || return; pwd)/blacklist.ini" # Define the blacklist
+	TEMP="/tmp" # Convert stats are temporary
+
+	## Output Variables
+	LOG="$TEMP/comvert.log"
+	CACHE="$SOURCE/.cb_cache"
 }
 
 # Define INPUT format
@@ -210,6 +212,7 @@ function ending_info(){
 parse_parameters "${@}"
 def_input
 def_output
+gen_variable
 
 # check environtment
 sanity_check
