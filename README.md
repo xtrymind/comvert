@@ -1,6 +1,6 @@
 comvert
 =====
-A quick bash script to batch convert digital Comic Books to differnt formats.
+A quick bash script to batch convert digital Comic Books into different formats.
 
 Requires:
 
@@ -21,6 +21,8 @@ Usage:
     -f [ single filename ]
     
     -l [ log anything suspicious ]
+
+    -b [ skip blacklist check ]
 
 - Removes Thumbs.db from archive, if found
 - Removes .DS_Store from archive, if found
