@@ -91,7 +91,7 @@ echo "+ Working from $SOURCE"
 echo
 
 ## Convert Loop
-find "$SOURCE" -name "$COMIC" | while read CBFILE; do
+find "$SOURCE" -name "$COMIC" | while read -r CBFILE; do
 
 BASENAME=`basename "$CBFILE" .$INPUT`
 DIRNAME=`dirname "$CBFILE"`
@@ -107,7 +107,7 @@ echo "--> Scanning"
 
 ## Scan the Blacklist
 if [[ -z ${NO_BL} ]]; then
-	while read CBSCAN; do
+	while read -r CBSCAN; do
 		CBCRED=`find -type f -iname "$CBSCAN"`
 		if [ ! -z "$CBCRED" ]; then
 			rm "$CBCRED"
