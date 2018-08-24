@@ -156,10 +156,12 @@ function convert() {
 		echo "-> Compressing"
 		7z a -sdel -t$FORMAT "$NEWNAME" ./* > /dev/null
 		mv "$NEWNAME" "$DIRNAME"
+		status=$?
 
-		## Dont delete the new file if it has the same name
-		if [ "$INPUT" != "$OUTPUT" ]; then
-			rm "$CBFILE"
+		if [ $status = 0 ]; then
+			if [ "$INPUT" != "$OUTPUT" ]; then
+				rm "$CBFILE"
+			fi
 		fi
 
 		echo "> Complete"
