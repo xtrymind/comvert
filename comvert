@@ -43,9 +43,9 @@ function parse_parameters() {
     done
 
     ## Default Options
-	[[ -z ${SOURCE} ]] && SOURCE=$(pwd)
-	[[ -z ${INPUT} ]] && INPUT="cbr"
-	[[ -z ${OUTPUT} ]] && OUTPUT="cbz"
+    [[ -z ${SOURCE} ]] && SOURCE=$(pwd)
+    [[ -z ${INPUT} ]] && INPUT="cbr"
+    [[ -z ${OUTPUT} ]] && OUTPUT="cbz"
 }
 
 # Enforces the value needed for two-part flags
@@ -60,134 +60,134 @@ function die() {
 }
 
 function gen_variable(){
-	## System Variables
-	BLIST="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" || return; pwd)/blacklist.ini" # Define the blacklist
-	TEMP="/tmp" # Convert stats are temporary
+    ## System Variables
+    BLIST="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" || return; pwd)/blacklist.ini" # Define the blacklist
+    TEMP="/tmp" # Convert stats are temporary
 
-	## Output Variables
-	LOG="$TEMP/comvert.log"
-	CACHE="$SOURCE/.cb_cache"
+    ## Output Variables
+    LOG="$TEMP/comvert.log"
+    CACHE="$SOURCE/.cb_cache"
 
-	[[ "$SOURCE" = /* ]] || SOURCE="$(dirname -- "$(realpath -- "$SOURCE")")/$SOURCE"
+    [[ "$SOURCE" = /* ]] || SOURCE="$(dirname -- "$(realpath -- "$SOURCE")")/$SOURCE"
 }
 
 # Define INPUT format
 function def_input() {
-	if [ -z "$FILE" ]; then
-		COMIC="*.$INPUT"
-	else
-		INPUT="${FILE#*.}" # Get INPUT type from file
-		FILE=$(basename "$FILE" ."$INPUT") # Redefine the file
-		COMIC="$FILE.$INPUT"
-	fi
+    if [ -z "$FILE" ]; then
+        COMIC="*.$INPUT"
+    else
+        INPUT="${FILE#*.}" # Get INPUT type from file
+        FILE=$(basename "$FILE" ."$INPUT") # Redefine the file
+        COMIC="$FILE.$INPUT"
+    fi
 }
 
 # Define OUTPUT format
 function def_output() {
-	if [ "$OUTPUT" == "cbz" ]; then
-		FORMAT="zip"
-	elif [ "$OUTPUT" == "cbt" ]; then
-		FORMAT="tar"
-	elif [ "$OUTPUT" == "cb7" ]; then
-		FORMAT="7z"
-	else
-		die "Output format is not supported"
-	fi
+    if [ "$OUTPUT" == "cbz" ]; then
+        FORMAT="zip"
+    elif [ "$OUTPUT" == "cbt" ]; then
+        FORMAT="tar"
+    elif [ "$OUTPUT" == "cb7" ]; then
+        FORMAT="7z"
+    else
+        die "Output format is not supported"
+    fi
 }
 
 # Sanity checks
 function sanity_check(){
-	[[ ! -f "$BLIST" ]] && die "Could not find the Blacklist"
-	[[ -f "$LOG" ]] || touch "$LOG"
-	[[ -d "$CACHE" ]] || mkdir "$CACHE"
+    [[ ! -f "$BLIST" ]] && die "Could not find the Blacklist"
+    [[ -f "$LOG" ]] || touch "$LOG"
+    [[ -d "$CACHE" ]] || mkdir "$CACHE"
 }
 
 # Scan the Blacklist
 function check_blacklist() {
-	if [[ -z ${NO_BL} ]]; then
-		while read -r CBSCAN; do
-			CBCRED=$(find . -type f -iname "$CBSCAN")
-			if [ ! -z "$CBCRED" ]; then
-				rm "$CBCRED"
-				echo "--> Removed Blacklisted File"
-			fi
-		done < "$BLIST"
-	fi
+    if [[ -z ${NO_BL} ]]; then
+        while read -r CBSCAN; do
+            CBCRED=$(find . -type f -iname "$CBSCAN")
+            if [ ! -z "$CBCRED" ]; then
+                rm "$CBCRED"
+                echo "--> Removed Blacklisted File"
+            fi
+        done < "$BLIST"
+    fi
 }
 
 # Scan for Suspicious files
 function check_suspicious() {
-	SUSP="$SOURCE/suspicious_files.txt"
-	CBSCAN=$(find . -type f -iname "[x-z]*")
-	if [ ! -z "$CBSCAN" ]; then
-		echo "--> Suspicious files found!"
-		if [[ -n ${LOCAL} ]]; then
-			{
-				echo "$BASENAME"
-				echo "$CBSCAN"
-				echo "|"
-			} >> "$SUSP"
-			echo "--> And logged to file"
-		else
-			echo "--> But not logged"
-		fi
-	fi
+    SUSP="$SOURCE/suspicious_files.txt"
+    CBSCAN=$(find . -type f -iname "[x-z]*")
+    if [ ! -z "$CBSCAN" ]; then
+        echo "--> Suspicious files found!"
+        if [[ -n ${LOCAL} ]]; then
+            {
+                echo "$BASENAME"
+                echo "$CBSCAN"
+                echo "|"
+            } >> "$SUSP"
+            echo "--> And logged to file"
+        else
+            echo "--> But not logged"
+        fi
+    fi
 }
 
 # Convert Loop
 function convert() {
-	find "$SOURCE" -name "$COMIC" | while read -r CBFILE; do
+    find "$SOURCE" -name "$COMIC" | while read -r CBFILE; do
 
-		COMICNAME=$(basename "$CBFILE")
-		BASENAME=$(basename "$CBFILE" ."$INPUT")
-		DIRNAME=$(dirname "$CBFILE")
-		NEWNAME="$BASENAME.$OUTPUT"
+        COMICNAME=$(basename "$CBFILE")
+        BASENAME=$(basename "$CBFILE" ."$INPUT")
+        DIRNAME=$(dirname "$CBFILE")
+        NEWNAME="$BASENAME.$OUTPUT"
 
-		echo "> Processing: $COMICNAME"
-		cd "$CACHE" || die "folder missing!"
+        echo "> Processing: $COMICNAME"
+        cd "$CACHE" || die "folder missing!"
 
-		echo "-> Extracting"
-		7z x "$CBFILE" >/dev/null
+        echo "-> Extracting"
+        7z x "$CBFILE" >/dev/null
 
-		echo "--> Scanning"
-		check_suspicious
-		check_blacklist
+        echo "--> Scanning"
+        check_suspicious
+        check_blacklist
 
-		echo "-> Compressing"
-		7z a -sdel -t$FORMAT "$NEWNAME" ./* > /dev/null
-		if mv "$NEWNAME" "$DIRNAME"; then
-			if  [ "$INPUT" != "$OUTPUT" ]; then
-				rm "$CBFILE"
-			fi
-		fi
+        echo "-> Compressing"
+        7z a -sdel -t$FORMAT "$NEWNAME" ./* > /dev/null
+        if mv "$NEWNAME" "$DIRNAME"; then
+            if  [ "$INPUT" != "$OUTPUT" ]; then
+                rm "$CBFILE"
+            fi
+        fi
 
-		echo "> Complete"
-		echo
-		done
+        echo "> Complete"
+        echo
+        done
 }
 
 # Start Logging
 function start_log(){
-	clear
-	exec > >(tee "$LOG")
-	echo "+ Working from $SOURCE"
-	echo
+    clear
+    exec > >(tee "$LOG")
+    echo "+ Working from $SOURCE"
+    echo
 }
 
 function ending_info(){
-	echo "=> Conversion Done"
-	rm -rf "$CACHE"
-	echo
+    echo "=> Conversion Done"
+    rm -rf "$CACHE"
+    echo
 
-	## Stats
-	CBDID=$(grep -c -i "Processing" "$LOG")
-	CBFND=$(grep -c -i "Blacklisted" "$LOG")
-	CBMSD=$(grep -c -i "Suspicious" "$LOG")
+    ## Stats
+    CBDID=$(grep -c -i "Processing" "$LOG")
+    CBFND=$(grep -c -i "Blacklisted" "$LOG")
+    CBMSD=$(grep -c -i "Suspicious" "$LOG")
 
-	echo "+ $CBDID archives processed"
-	echo "+ $CBFND files removed"
-	echo "+ $CBMSD suspicious archives"
-	echo
+    echo "+ $CBDID archives processed"
+    echo "+ $CBFND files removed"
+    echo "+ $CBMSD suspicious archives"
+    echo
 }
 
 # Parse command line parameters and setup variable
